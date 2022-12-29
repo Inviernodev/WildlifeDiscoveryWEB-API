@@ -17,20 +17,18 @@ let connection = mysql.createConnection({
 });
 
 let promise1 = new Promise((res, rej) => {
-    console.log('Promesa1');
-    res();
+    console.log('Entramos a promesa 1')
+    res('promesa1 resolve');
 });
-let promise2 = new Promise();
 
-promise1.then(() => {},);
+let promise2 = new Promise((resolve, reject) => {
+    console.log('Entramos a promesa 2')
+    setTimeout(() => {
+        resolve('promesa2 resolve');
+    }, 5000);
+});
 
-holaSoy = (hola) => {
-    this;
-}
-
-function holaSoyUnaFuncion(hola) {
-    this;
-}
+promise1.then(() => {});
 
 connection.connect(function(err) {
     if (err) {
@@ -38,6 +36,7 @@ connection.connect(function(err) {
     }
     console.log('Connected to the MySQL server.');
 });
+
 
 app.get('/test', (req, res) => {
     connection.query('SELECT * FROM ulearnet_reim_pilotaje.alumno_respuesta_actividad where id_reim = 666;', function (err, result) {
