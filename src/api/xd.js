@@ -10,13 +10,6 @@ router.get('/', (request, response) => {
     `)
 });
 
-router.get('/dibujo', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.alumno_respuesta_actividad where id_reim = 666 and id_actividad = 60011;', function (err, result) {
-        if (err) throw err;
-        response.send(result);
-    });
-});
-
 
 router.get('/dibujoimagen', (request, response) => {
     connection.query('SELECT * FROM ulearnet_reim_pilotaje.dibujo_reim where reim_id = 666;', function (err, result) {
@@ -25,8 +18,29 @@ router.get('/dibujoimagen', (request, response) => {
     });
 });
 
-router.get('/dibujotiempo', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.tiempoxactividad where reim_id = 666 and actividad_id= 60011;', function (err, result) {
+
+router.get('/select-actividades', (request, response) => {
+    connection.query(`SELECT * FROM ulearnet_reim_pilotaje.actividad
+    WHERE id = 60008
+    OR id = 60009
+    OR id = 60010
+    OR id = 60011;`, function (err, result) {
+        if (err) throw err;
+        response.send(result);
+    });
+});
+
+router.get('/tiempo-actividad/:idActividad', (request, response) => {
+    console.log(request.params.idActividad);
+    connection.query(`
+        SELECT
+        TA.inicio, TA.final, TA.usuario_id, US.nombres, US.apellido_paterno, US.apellido_materno
+        FROM ulearnet_reim_pilotaje.tiempoxactividad as TA
+        INNER JOIN ulearnet_reim_pilotaje.usuario as US
+        ON TA.usuario_id = US.id
+        WHERE TA.reim_id = 666
+        AND actividad_id = ${request.params.idActividad};
+    `, function (err, result) {
         if (err) throw err;
         response.send(result);
     });
@@ -48,26 +62,20 @@ router.get('/quiz', (request, response) => {
     });
 });
 
-router.get('/quiztiempo', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.tiempoxactividad where reim_id = 666 and actividad_id= 60010;', function (err, result) {
-        if (err) throw err;
-        response.send(result);
-    });
-});
-
 router.get('/botes', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.alumno_respuesta_actividad where id_reim = 666 and id_actividad = 60008;', function (err, result) {
+    connection.query(`SELECT count(*) totalCount,
+    US.id, US.nombres, US.apellido_paterno, US.apellido_materno, RES.id_elemento, RES.datetime_touch
+    FROM ulearnet_reim_pilotaje.usuario as US
+    INNER JOIN ulearnet_reim_pilotaje.alumno_respuesta_actividad as RES 
+    ON US.id = RES.id_user 
+    WHERE RES.id_reim = 666 and RES.id_elemento = 6660106
+    GROUP BY DATE_FORMAT(RES.datetime_touch,"%d-%m-%y") ;
+    `, function (err, result) {
         if (err) throw err;
         response.send(result);
     });
 });
 
-router.get('/botestiempo', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.tiempoxactividad where reim_id = 666 and actividad_id= 60008;', function (err, result) {
-        if (err) throw err;
-        response.send(result);
-    });
-});
 
 router.get('/plataformas', (request, response) => {
     connection.query('SELECT * FROM ulearnet_reim_pilotaje.alumno_respuesta_actividad where id_reim = 666 and id_actividad = 60009;', function (err, result) {
@@ -76,11 +84,5 @@ router.get('/plataformas', (request, response) => {
     });
 });
 
-router.get('/plataformastiempo', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.tiempoxactividad where reim_id = 666 and actividad_id= 60009;', function (err, result) {
-        if (err) throw err;
-        response.send(result);
-    });
-});
 
 export default router;
