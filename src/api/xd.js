@@ -12,7 +12,14 @@ router.get('/', (request, response) => {
 
 
 router.get('/dibujoimagen', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.dibujo_reim where reim_id = 666;', function (err, result) {
+    connection.query(`
+        SELECT
+        DS.id, DS.nombres, DS.apellido_paterno, DS.apellido_materno, DR.imagen
+        FROM ulearnet_reim_pilotaje.usuario as DS
+        INNER JOIN ulearnet_reim_pilotaje.dibujo_reim as DR
+        ON DS.id = DR.usuario_id
+        WHERE DR.reim_id = 666 and DR.actividad_id = 60011;
+    `, function (err, result) {
         if (err) throw err;
         response.send(result);
     });
