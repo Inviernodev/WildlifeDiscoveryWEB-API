@@ -78,7 +78,12 @@ router.get('/botes', (request, response) => {
 
 
 router.get('/plataformas', (request, response) => {
-    connection.query('SELECT * FROM ulearnet_reim_pilotaje.alumno_respuesta_actividad where id_reim = 666 and id_actividad = 60009;', function (err, result) {
+    connection.query(`SELECT
+    US.id, US.nombres, US.apellido_paterno, US.apellido_materno, RES.resultado, RES.datetime_touch
+    FROM ulearnet_reim_pilotaje.usuario as US
+    INNER JOIN ulearnet_reim_pilotaje.alumno_respuesta_actividad as RES 
+    ON US.id = RES.id_user 
+    WHERE RES.id_reim = 666 and RES.id_elemento = 6660113;`, function (err, result) {
         if (err) throw err;
         response.send(result);
     });
